@@ -5,3 +5,4 @@ authors = ["mikong <michaelgalero@gmail.com>"]
 
 [dependencies]
 termion = "1.5.1"
+regex = "1.0.4"
