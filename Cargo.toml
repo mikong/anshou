@@ -2,6 +2,9 @@
 name = "anshou"
 version = "0.1.0"
 authors = ["mikong <michaelgalero@gmail.com>"]
+description = "A text-based UI (TUI) application for generating passwords."
+license = "MIT"
+publish = false
 
 [dependencies]
 termion = "1.5.1"
