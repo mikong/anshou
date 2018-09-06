@@ -3,13 +3,15 @@ mod config;
 extern crate regex;
 extern crate publicsuffix;
 extern crate url;
-
 #[macro_use]
 extern crate lazy_static;
+extern crate sha2;
+extern crate base64;
 
 use regex::Regex;
 use publicsuffix::List;
 use url::Url;
+use sha2::{Sha256, Digest};
 
 use config::Config;
 
@@ -18,9 +20,26 @@ lazy_static! {
 }
 
 pub fn generate(config: Config) -> String {
-    let s = format!("{}:{}", config.master_password, config.domain);
+    let domain = get_domain_root(&config.domain).unwrap();
+    let s = format!("{}:{}", config.master_password, domain);
 
-    s
+    let hash = Sha256::digest_str(&s);
+
+    let b64 = base64::encode(hash.as_slice());
+
+    // TODO: panics on index out of bounds
+    password_encode(&b64[0..config.length])
+}
+
+fn password_encode(input: &str) -> String {
+    input.chars()
+        .map(|c| match c {
+            '/' => '8',
+            '+' => '9',
+            '=' => 'A',
+            _ => c,
+        })
+        .collect()
 }
 
 pub fn is_valid(password: &str) -> bool {
@@ -118,5 +137,21 @@ mod tests {
 
         let url = "http://www.google.com";
         assert_eq!(get_domain_root(url).unwrap(), "google.com".to_string());
+    }
+
+    #[test]
+    fn password_charset() {
+        let raw = "abcdABCD0123/+=";
+
+        assert_eq!(password_encode(&raw), "abcdABCD012389A");
+    }
+
+    #[test]
+    fn generated_password() {
+        let config = Config::new("123456", "www.google.com");
+
+        let s = generate(config);
+
+        assert_eq!(s, "5g9kcMmXgM");
     }
 }

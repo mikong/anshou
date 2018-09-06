@@ -1,7 +1,7 @@
 pub struct Config {
     pub master_password: String,
     pub domain: String,
-    pub length: u32,
+    pub length: usize,
 }
 
 impl Config {
