@@ -1,3 +1,5 @@
+mod config;
+
 extern crate regex;
 extern crate publicsuffix;
 extern crate url;
@@ -9,8 +11,16 @@ use regex::Regex;
 use publicsuffix::List;
 use url::Url;
 
+use config::Config;
+
 lazy_static! {
     static ref SUFFIX_LIST: List = List::fetch().unwrap();
+}
+
+pub fn generate(config: Config) -> String {
+    let s = format!("{}:{}", config.master_password, config.domain);
+
+    s
 }
 
 pub fn is_valid(password: &str) -> bool {
