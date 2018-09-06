@@ -9,3 +9,6 @@ publish = false
 [dependencies]
 termion = "1.5.1"
 regex = "1.0.4"
+publicsuffix = "1.5.1"
+url = "1.7.1"
+lazy_static = "1.1.0"
