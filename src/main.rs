@@ -1,7 +1,8 @@
 extern crate termion;
 
 use termion::raw::IntoRawMode;
-use termion::event::Key;
+use termion::event;
+use termion::cursor;
 use termion::input::TermRead;
 use std::io::{Write, stdout, stdin};
 
@@ -25,14 +26,34 @@ fn main() {
     let mut stdout = stdout().into_raw_mode().unwrap();
     stdout.write(FORM.as_bytes()).unwrap();
 
+    write!(stdout, "Password: ").unwrap();
+    stdout.flush().unwrap();
+
+    let mut s = String::new();
+
     for c in stdin().keys() {
         match c.unwrap() {
-            Key::Char('q') => break,
-            _ => continue,
+            event::Key::Char('\n') => {
+                println!("\n\r{}\n\r", s);
+                break;
+            },
+            event::Key::Char(c) => {
+                write!(stdout, "∙").unwrap();
+                stdout.flush().unwrap();
+                s.push(c);
+            },
+            event::Key::Backspace => {
+                write!(stdout, "{} {}", cursor::Left(1), cursor::Left(1)).unwrap();
+                stdout.flush().unwrap();
+                s.pop();
+            },
+            _ => {},
         }
     }
 
-    println!("{fg}{bg}",
+    print!("{fg}{bg}{clear}",
         fg = color::Fg(color::Reset),
-        bg = color::Bg(color::Reset));
+        bg = color::Bg(color::Reset),
+        clear = clear::CurrentLine,
+    );
 }
