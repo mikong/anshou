@@ -23,12 +23,23 @@ pub fn generate(config: Config) -> String {
     let domain = get_domain_root(&config.domain).unwrap();
     let s = format!("{}:{}", config.master_password, domain);
 
-    let hash = Sha256::digest_str(&s);
+    let mut password = pruned_b64_sha256(&s, config.length);
+    for _ in 0..10 {
+        if is_valid(&password) {
+            return password
+        }
+        password = pruned_b64_sha256(&password, config.length);
+    }
 
+    password
+}
+
+fn pruned_b64_sha256(input: &str, length: usize) -> String {
+    let hash = Sha256::digest_str(input);
     let b64 = base64::encode(hash.as_slice());
 
     // TODO: panics on index out of bounds
-    password_encode(&b64[0..config.length])
+    password_encode(&b64[0..length])
 }
 
 fn password_encode(input: &str) -> String {
@@ -152,6 +163,6 @@ mod tests {
 
         let s = generate(config);
 
-        assert_eq!(s, "5g9kcMmXgM");
+        assert_eq!(s, "o88CL6J9Ba");
     }
 }
