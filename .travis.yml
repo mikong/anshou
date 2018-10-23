@@ -4,3 +4,6 @@ rust:
   - beta
   - nightly
 cache: cargo
+os:
+  - linux
+  - osx
