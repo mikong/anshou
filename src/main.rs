@@ -1,4 +1,5 @@
 extern crate termion;
+extern crate anshou;
 
 use termion::raw::IntoRawMode;
 use termion::event;
@@ -8,14 +9,7 @@ use std::io::{Write, stdout, stdin};
 
 use termion::{color, clear};
 
-const FORM: &'static str = "╔══════════════════════════════════╗\n\r\
-                            ║                                  ║\n\r\
-                            ║ Algorithm: SHA1                  ║\n\r\
-                            ║ Length: 10                       ║\n\r\
-                            ║ Password: ∙∙∙∙∙∙                 ║\n\r\
-                            ║ Domain: github.com               ║\n\r\
-                            ║                                  ║\n\r\
-                            ╚══════════════════════════════════╝\n\r";
+use anshou::Form;
 
 fn main() {
     print!("{clear}{fg}{bg}",
@@ -24,7 +18,9 @@ fn main() {
         bg = color::Bg(color::Blue));
 
     let mut stdout = stdout().into_raw_mode().unwrap();
-    stdout.write(FORM.as_bytes()).unwrap();
+
+    let form = Form::new();
+    form.render(&mut stdout);
 
     write!(stdout, "Password: ").unwrap();
     stdout.flush().unwrap();

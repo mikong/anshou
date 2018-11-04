@@ -1,4 +1,7 @@
 mod config;
+mod form;
+
+pub use form::Form;
 
 extern crate regex;
 extern crate publicsuffix;
