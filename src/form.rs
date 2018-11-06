@@ -5,47 +5,28 @@ trait Element {
     fn width(&self) -> u16;
 }
 
-struct Password {
+#[derive(Debug)]
+struct Field {
+    name: String,
     value: String,
 }
 
-impl Password {
-    fn new() -> Self {
-        Password { value: String::new() }
+impl Field {
+    fn new(name: String) -> Self {
+        Field {
+            value: String::new(),
+            name,
+        }
     }
 
-    fn boxed() -> Box<Self> {
-        Box::new(Self::new())
-    }
-}
-
-impl Element for Password {
-    fn label(&self) -> &'static str {
-        &"Password"
-    }
-
-    fn width(&self) -> u16 {
-        35
+    fn boxed(name: String) -> Box<Self> {
+        Box::new(Self::new(name))
     }
 }
 
-struct Domain {
-    value: String,
-}
-
-impl Domain {
-    fn new() -> Self {
-        Domain { value: String::new() }
-    }
-
-    fn boxed() -> Box<Self> {
-        Box::new(Self::new())
-    }
-}
-
-impl Element for Domain {
-    fn label(&self) -> &'static str {
-        &"Domain"
+impl Element for Field {
+    fn label(&self) -> &str {
+        &self.name
     }
 
     fn width(&self) -> u16 {
@@ -60,7 +41,9 @@ pub struct Form {
 
 impl Form {
     pub fn new() -> Self {
-        let elems: Vec<Box<Element>> = vec![Password::boxed(), Domain::boxed()];
+        let password = Field::boxed("Password".to_string());
+        let domain = Field::boxed("Domain".to_string());
+        let elems: Vec<Box<Element>> = vec![password, domain];
         let width = Self::calculate_width(&elems);
 
         Form {
