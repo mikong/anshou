@@ -2,7 +2,7 @@ use std::io::Write;
 
 trait Element {
     fn label(&self) -> &str;
-    fn width(&self) -> u16;
+    fn width(&self) -> usize;
 }
 
 #[derive(Debug)]
@@ -12,6 +12,9 @@ struct Field {
 }
 
 impl Field {
+    const SEPARATOR: &'static str = ": ";
+    const MAX_LEN: usize = 25;
+
     fn new(name: String) -> Self {
         Field {
             value: String::new(),
@@ -29,14 +32,14 @@ impl Element for Field {
         &self.name
     }
 
-    fn width(&self) -> u16 {
-        35
+    fn width(&self) -> usize {
+        self.label().len() + Field::SEPARATOR.len() + Field::MAX_LEN
     }
 }
 
 pub struct Form {
     elems: Vec<Box<Element>>,
-    width: u16,
+    width: usize,
 }
 
 impl Form {
@@ -94,7 +97,7 @@ impl Form {
         s
     }
 
-    fn calculate_width(elems: &Vec<Box<Element>>) -> u16 {
+    fn calculate_width(elems: &Vec<Box<Element>>) -> usize {
         let border_width = 1;
         let margin_width = 1;
 
